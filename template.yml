@@ -1,1 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Lambda application that uses Selenium web driver to periodically polls gasoline prices.
 
+Parameters:
+
+    BucketName:
+        Description: S3 Bucket
+        Type: String   
+
+Resources:
+
+    MyBucket:
+        Type: AWS::S3::Bucket
+        Properties:
+            BucketName: 
+                Ref: BucketName
+
+    WebScraperRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                -   Effect: Allow
+                    Principal:
+                        Service:
+                        - lambda.amazonaws.com
+                    Action:
+                    - sts:AssumeRole
+            Policies:
+                -   PolicyName: Allow-logs
+                    PolicyDocument:
+                        Version: '2012-10-17'
+                        Statement:
+                        -   Effect: Allow
+                            Action:
+                            - 'logs:CreateLogGroup'
+                            - 'logs:CreateLogStream'
+                            - 'logs:PutLogEvents'
+                            Resource: arn:aws:logs:*:*:*   
+                -   PolicyName: BucketGetPutObject
+                    PolicyDocument:
+                        Version: '2012-10-17'
+                        Statement:
+                        -   Effect: Allow
+                            Action:
+                            - 's3:GetObject'
+                            - 's3:PutObject'
+                            Resource: 
+                                Fn::Join: ["", ["arn:aws:s3:::", Ref: "BucketName", "/*"]] 
+
+    ScraperFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: lambda.lambda_handler
+            Runtime: python3.8
+            CodeUri: src/.
+            Description: Call the AWS Lambda API
+            Timeout: 30
+            # Function's execution role
+            Role: 
+                Fn::GetAtt: [ "WebScraperRole", "Arn" ]
+            Tracing: Active
+            Layers:
+            -  Ref: Libs
+            Environment:
+                Variables:
+                    BUCKET:
+                        Ref: BucketName
+    Libs:
+        Type: AWS::Serverless::LayerVersion
+        Properties:
+            LayerName: python-lib
+            Description: Dependencies for the app.
+            ContentUri: package/.
+            CompatibleRuntimes:
+                - python3.8
