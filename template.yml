@@ -56,7 +56,7 @@ Resources:
             Handler: lambda.lambda_handler
             Runtime: python3.8
             CodeUri: src/.
-            Description: Call the AWS Lambda API
+            Description: Scrape gas station fuel prices.
             Timeout: 30
             # Function's execution role
             Role: 
@@ -68,6 +68,12 @@ Resources:
                 Variables:
                     BUCKET:
                         Ref: BucketName
+            Events:
+                CWScheduledEvent:
+                    Type: Schedule
+                    Properties:
+                        Schedule: rate(5 minute)
+
     Libs:
         Type: AWS::Serverless::LayerVersion
         Properties:
