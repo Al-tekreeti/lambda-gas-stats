@@ -1,4 +1,4 @@
-.PHONY: clean create-bucket-name fetch-dependencies lambda-build lambda-deploy
+.PHONY: clean create-bucket-name fetch-dependencies docker-build docker-run lambda-build lambda-deploy
 
 ## delete build files
 clean:		
@@ -32,6 +32,14 @@ lambda-build: clean fetch-dependencies
 		mkdir package package/python package/python/lib
 		cp -r bin package/python/.
 		pip install --target package/python/lib/. -r requirements.txt
+
+## create Docker image
+docker-build:		
+	docker-compose build
+
+## run `src.lambda_function.lambda_handler` with docker-compose
+docker-run:			
+	docker-compose run lambda src.lambda_function.lambda_handler
 
 ## deploy Lambda function
 lambda-deploy:
