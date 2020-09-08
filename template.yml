@@ -68,6 +68,8 @@ Resources:
                 Variables:
                     BUCKET:
                         Ref: BucketName
+                    PYTHONPATH: "/var/task/src:/var/task/lib"
+                    PATH: "/var/task/bin"
             Events:
                 CWScheduledEvent:
                     Type: Schedule

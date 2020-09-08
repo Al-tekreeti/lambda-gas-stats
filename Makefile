@@ -33,6 +33,13 @@ lambda-build: clean fetch-dependencies
 		cp -r bin package/python/.
 		pip install --target package/python/lib/. -r requirements.txt
 
+## deploy Lambda function
+lambda-deploy:
+		ARTIFACT_BUCKET=$(cat bucket-name.txt)
+		aws cloudformation package --template-file template.yml --s3-bucket $ARTIFACT_BUCKET --output-template-file out.yml
+
+		aws cloudformation deploy --template-file out.yml --stack-name gas-station-scraper --parameter-overrides BucketName=$ARTIFACT_BUCKET --capabilities CAPABILITY_NAMED_IAM
+		
 ## create Docker image
 docker-build:		
 	docker-compose build
@@ -40,14 +47,4 @@ docker-build:
 ## run `src.lambda_function.lambda_handler` with docker-compose
 docker-run:			
 	docker-compose run lambda src.lambda_function.lambda_handler
-
-## deploy Lambda function
-lambda-deploy:
-		ARTIFACT_BUCKET=$(cat bucket-name.txt)
-		aws cloudformation package --template-file template.yml --s3-bucket $ARTIFACT_BUCKET --output-template-file out.yml
-
-		aws cloudformation deploy --template-file out.yml --stack-name gas-station-scraper --capabilities CAPABILITY_NAMED_IAM
-		
-
-
 
