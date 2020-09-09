@@ -41,24 +41,12 @@ class WebBrowser:
         chrome_options.add_argument(
             'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
 
-        chrome_options.binary_location = os.getcwd() + "/bin/headless-chromium"
+        chrome_options.binary_location = os.getcwd() + "/opt/python/bin/headless-chromium"
 
-        self._driver = webdriver.Chrome(chrome_options=chrome_options)
+        self._driver = webdriver.Chrome('/opt/python/bin/chromedriver', chrome_options=chrome_options)
 
     def get_url(self, url):
         self._driver.get(url)
-
-    def set_input_value(self, xpath, value):
-        elem_send = self._driver.find_element_by_xpath(xpath)
-        elem_send.send_keys(value)
-
-    def click(self, xpath):
-        elem_click = self._driver.find_element_by_xpath(xpath)
-        elem_click.click()
-
-    def get_inner_html(self, xpath):
-        elem_value = self._driver.find_element_by_xpath(xpath)
-        return elem_value.get_attribute('innerHTML')
     
     def find(self, xpath):
         return self._driver.find_element_by_xpath(xpath)
