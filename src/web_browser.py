@@ -41,9 +41,8 @@ class WebBrowser:
         chrome_options.add_argument(
             'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
 
-        chrome_options.binary_location = os.getcwd() + "/opt/python/bin/headless-chromium"
-
-        self._driver = webdriver.Chrome('/opt/python/bin/chromedriver', chrome_options=chrome_options)
+        chrome_options.binary_location = os.getcwd() + "/bin/headless-chromium"
+        self._driver = webdriver.Chrome(chrome_options=chrome_options)
 
     def get_url(self, url):
         self._driver.get(url)
