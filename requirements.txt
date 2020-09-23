@@ -1,2 +1,4 @@
 selenium==3.141.0
 chromedriver-binary==2.37.0
+boto3
+botocore

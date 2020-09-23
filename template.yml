@@ -7,14 +7,9 @@ Parameters:
     BucketName:
         Description: S3 Bucket
         Type: String   
+        Default: lambda
 
 Resources:
-
-    MyBucket:
-        Type: AWS::S3::Bucket
-        Properties:
-            BucketName: 
-                Ref: BucketName
 
     WebScraperRole:
         Type: AWS::IAM::Role
@@ -29,7 +24,7 @@ Resources:
                     Action:
                     - sts:AssumeRole
             Policies:
-                -   PolicyName: Allow-logs
+                -   PolicyName: AllowLogs
                     PolicyDocument:
                         Version: '2012-10-17'
                         Statement:
@@ -48,16 +43,26 @@ Resources:
                             - 's3:GetObject'
                             - 's3:PutObject'
                             Resource: 
-                                Fn::Join: ["", ["arn:aws:s3:::", Ref: "BucketName", "/*"]] 
+                                Fn::Join: ["", ["arn:aws:s3:::", Ref: "BucketName", "/*"]]
+                -   PolicyName: XrayLambdaPolicy
+                    PolicyDocument:
+                        Version: "2012-10-17"
+                        Statement:
+                        -   Effect: Allow
+                            Action:
+                            - "xray:PutTraceSegments"
+                            - "xray:PutTelemetryRecords"
+                            Resource: "*"
 
     ScraperFunction:
         Type: AWS::Serverless::Function
         Properties:
-            Handler: lambda.lambda_handler
-            Runtime: python3.8
+            Handler: lambda_function.lambda_handler
+            Runtime: python3.6
             CodeUri: src/.
             Description: Scrape gas station fuel prices.
             Timeout: 30
+            MemorySize: 1024
             # Function's execution role
             Role: 
                 Fn::GetAtt: [ "WebScraperRole", "Arn" ]
@@ -68,11 +73,13 @@ Resources:
                 Variables:
                     BUCKET:
                         Ref: BucketName
+                    PYTHONPATH: "/var/task:/opt/python/lib"
+                    PATH: "/opt/python/bin"
             Events:
                 CWScheduledEvent:
                     Type: Schedule
                     Properties:
-                        Schedule: rate(5 minute)
+                        Schedule: rate(5 minutes)
 
     Libs:
         Type: AWS::Serverless::LayerVersion
@@ -81,4 +88,4 @@ Resources:
             Description: Dependencies for the app.
             ContentUri: package/.
             CompatibleRuntimes:
-                - python3.8
+                - python3.6
