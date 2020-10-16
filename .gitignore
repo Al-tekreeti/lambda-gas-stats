@@ -2,5 +2,4 @@
 .venv/
 src/__pycache__/
 bin/
-package/
 out.yml
