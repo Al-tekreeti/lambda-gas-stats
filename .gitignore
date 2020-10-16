@@ -3,5 +3,4 @@
 src/__pycache__/
 bin/
 package/
-bucket-name.txt
 out.yml
