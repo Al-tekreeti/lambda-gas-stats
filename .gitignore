@@ -3,3 +3,4 @@
 src/__pycache__/
 bin/
 out.yml
+!package/python/bin/
