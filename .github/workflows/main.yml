@@ -31,4 +31,5 @@ jobs:
       # package and deploy the lambda function
       - name: Package and deploy lambda
         run: |
+          chmod +x 2-fetch-dependencies.sh
           make deploy-github-actions
