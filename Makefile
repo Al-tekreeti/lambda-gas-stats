@@ -38,3 +38,5 @@ deploy-locally: docker-build docker-run
 ## deploy and invoke in the aws cloud
 deploy-aws: create-bucket lambda-build lambda-deploy
 
+## deploy and invoke in the aws after using github actions
+deploy-github-actions: fetch-dependencies lambda-build lambda-deploy

@@ -31,4 +31,4 @@ jobs:
       # package and deploy the lambda function
       - name: Package and deploy lambda
         run: |
-          make lambda-deploy
+          make deploy-github-actions
