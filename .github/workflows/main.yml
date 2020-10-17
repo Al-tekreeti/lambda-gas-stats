@@ -31,6 +31,8 @@ jobs:
       # package and deploy the lambda function
       - name: Package and deploy lambda
         run: |
+          pip install --upgrade pip
+          pip istall wheel
           chmod +x 2-fetch-dependencies.sh
           chmod +x 3-build-layer.sh
           chmod +x 4-deploy-lambda.sh
